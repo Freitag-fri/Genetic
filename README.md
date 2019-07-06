@@ -1,0 +1,2 @@
+# Genetic
+Genetic algoritm
