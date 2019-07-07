@@ -3,7 +3,6 @@
 #include "genetic.h"
 #include <time.h>
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -18,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
     object[3] = &colorLabel3;
     object[4] = &colorLabel4;
 
-
     objWidget[0] = ui->label;
     objWidget[1] = ui->label_2;
     objWidget[2] = ui->label_3;
@@ -31,8 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
         darkPalette2.setColor(QPalette::Window, Colour);
         objWidget[i]->setPalette(darkPalette2);
     }
-
-
 }
 
 MainWindow::~MainWindow()
@@ -91,18 +87,10 @@ void MainWindow::on_pushButton_clicked()
             else
                 object[c]->SetColorB(rand() %9 + (-4));
         }
-
-
-//        Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
-//        darkPalette2.setColor(QPalette::Window, Colour);
-//        objWidget[c]->setPalette(darkPalette2);
     }
 
     for (int c = 0; c < 5; c++)
     {
-
-
-
         Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
         darkPalette2.setColor(QPalette::Window, Colour);
         objWidget[c]->setPalette(darkPalette2);
