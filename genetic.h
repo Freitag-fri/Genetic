@@ -9,16 +9,25 @@ class Genetic
 {
 public:
     Genetic();
+    int GetColorR();
+    int GetColorG();
+    int GetColorB();
+    int GetDeltaColor();
+
+    void SetColorR(int value);
+    void SetColorG(int value);
+    void SetColorB(int value);
+    void SetDeltaColor(int value);
 
     //Genetic(const Genetic &other);
 
-    Genetic(const Genetic &other)
-    {
-        this->colorR = other.colorR;
-        this->colorG = other.colorG;
-        this->colorB = other.colorB;
-        this->deltaColor = other.deltaColor;
-    }
+    //    Genetic(const Genetic &other)
+    //    {
+    //        this->colorR = other.colorR;
+    //        this->colorG = other.colorG;
+    //        this->colorB = other.colorB;
+    //        this->deltaColor = other.deltaColor;
+    //    }
 
     Genetic& operator =(Genetic& obj) // Оператор присваивания
     {
@@ -29,7 +38,7 @@ public:
         return *this;
     }
 
-    //private:
+private:
     int colorR;
     int colorG;
     int colorB;
