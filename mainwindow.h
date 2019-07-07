@@ -25,6 +25,8 @@ private slots:
 
     void on_SliderBlue_sliderMoved(int position);
 
+
+
 private:
     Ui::MainWindow *ui;
 
@@ -39,6 +41,8 @@ private:
 
     QPalette darkPalette2;
     QColor Colour;
+
+    void ColorWindow();
 };
 
 #endif // MAINWINDOW_H
