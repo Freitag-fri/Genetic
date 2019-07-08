@@ -68,4 +68,18 @@ void Genetic::SetDeltaColor(int value)
     deltaColor += value;
 }
 
+void Genetic::ChangeColorR(int value)
+{
+    colorR = value;
+}
+
+void Genetic::ChangeColorG(int value)
+{
+    colorG = value;
+}
+
+void Genetic::ChangeColorB(int value)
+{
+    colorB = value;
+}
 

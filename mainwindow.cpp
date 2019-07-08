@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "genetic.h"
 #include <time.h>
+#include <windows.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -64,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     objWidget[24] = ui->label_25;
 
 
-    for (int i = 0; i < 25; i++)                             //закрашиваем окна случайным цветом
+    for (int i = 0; i < allElements; i++)            //закрашиваем окна случайным цветом
     {
         Colour.setRgb(rand()%256, rand()%256, rand()%256);
         darkPalette2.setColor(QPalette::Window, Colour);
@@ -79,81 +80,186 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
+    Variant2();
+
+    //OneParents();
+}
+
+void MainWindow::Variant2()                     //турнирная селекция (из 2-х вариантов выбирается более приспособленный)
+{
     const int RWindow = ui->SliderRed->value();
     const int GWindow = ui->SliderGreen->value();
     const int BWindow = ui->SliderBlue->value();
-
+    int n = 0;
     int minDeltaColor = 1000;
-    int mainObject = 5;
-
-    for (int i = 0; i < 25; i++)
+    while (minDeltaColor > 2)
     {
-        object[i]->ResetColor();
-
-        object[i]->SetColorR(objWidget[i]->palette().window().color().red());
-        object[i]->SetColorG(objWidget[i]->palette().window().color().green());
-        object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
-
-        object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
-        object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
-        object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
-
-        if (object[i]->GetDeltaColor() < minDeltaColor)
+        n++;
+        Sleep(50);
+        QApplication::processEvents();
+        for (int i = 0; i < allElements/2; i++)
         {
-            minDeltaColor = object[i]->GetDeltaColor();
-            mainObject = i;
-        }
-    }
+            minDeltaColor = 1000;
+            object[i*2]->ResetColor();
 
-    for (int c = 0; c < 25; c++)
-    {
-        object[c]->operator=(*object[mainObject]);
+            object[i*2]->SetColorR(objWidget[i*2]->palette().window().color().red());
+            object[i*2]->SetColorG(objWidget[i*2]->palette().window().color().green());
+            object[i*2]->SetColorB(objWidget[i*2]->palette().window().color().blue());
 
-        if(rand()%100 < 50)
-        {
-            int color = rand()%3;
+            object[i*2]->SetDeltaColor(abs(RWindow - object[i*2]->GetColorR()));
+            object[i*2]->SetDeltaColor(abs(GWindow - object[i*2]->GetColorG()));
+            object[i*2]->SetDeltaColor(abs(BWindow - object[i*2]->GetColorB()));
 
-            if (color == 0)
+
+            object[i*2+1]->ResetColor();
+
+            object[i*2+1]->SetColorR(objWidget[i*2+1]->palette().window().color().red());
+            object[i*2+1]->SetColorG(objWidget[i*2+1]->palette().window().color().green());
+            object[i*2+1]->SetColorB(objWidget[i*2+1]->palette().window().color().blue());
+
+            object[i*2+1]->SetDeltaColor(abs(RWindow - object[i*2+1]->GetColorR()));
+            object[i*2+1]->SetDeltaColor(abs(GWindow - object[i*2+1]->GetColorG()));
+            object[i*2+1]->SetDeltaColor(abs(BWindow - object[i*2+1]->GetColorB()));
+
+            if (object[i*2+1]->GetDeltaColor() < object[i*2]->GetDeltaColor())
             {
-                object[c]->SetColorR(rand() %7 + (-3));
-            }
-            else if (color == 1)
-            {
-                object[c]->SetColorG(rand() %7 + (-3));
+                if(object[i*2+1]->GetDeltaColor()<minDeltaColor)
+                    minDeltaColor = object[i*2+1]->GetDeltaColor();
+                //object[i*2]->operator=(*object[i*2+1]);
+                Children(i*2+1, i*2);
+
             }
             else
-                object[c]->SetColorB(rand() %7 + (-3));
+            {
+                if(object[i*2]->GetDeltaColor()<minDeltaColor)
+                    minDeltaColor = object[i*2]->GetDeltaColor();
+                //object[i*2+1]->operator=(*object[i*2]);
+                Children(i*2, i*2+1);
+            }
+
+            Mutation(i*2);
+            Mutation(i*2+1);
+
+            Colour.setRgb(object[i*2]->GetColorR(), object[i*2]->GetColorG(), object[i*2]->GetColorB());
+            darkPalette2.setColor(QPalette::Window, Colour);
+            objWidget[i*2]->setPalette(darkPalette2);
+
+            Colour.setRgb(object[i*2+1]->GetColorR(), object[i*2+1]->GetColorG(), object[i*2+1]->GetColorB());
+            darkPalette2.setColor(QPalette::Window, Colour);
+            objWidget[i*2+1]->setPalette(darkPalette2);
         }
-    }
 
-    for (int c = 0; c < 25; c++)
+        for( int i = 0; i < allElements-1; i++)
+        {
+            QWidget *a = objWidget[i];
+            int pos = (i + allElements-1) % allElements;
+            objWidget[i] = objWidget[pos];
+            objWidget[pos] = a;
+        }
+        //        ui->label->setText( "R " + QString::number(object[0]->GetColorR()) + " G "
+        //                                +QString::number(object[0]->GetColorG()) +" B "
+        //                                +QString::number(object[0]->GetColorB()));
+        ui->label->setText(QString::number(n));
+    }
+}
+
+void MainWindow::Children(int main, int other)
+{
+    int n = rand()%3;
+    if (n == 0)
     {
-        Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
-        darkPalette2.setColor(QPalette::Window, Colour);
-        objWidget[c]->setPalette(darkPalette2);
+        object[main]->ChangeColorR(object[other]->GetColorR());
+        object[other]->ChangeColorG(object[main]->GetColorG());
+        object[other]->ChangeColorB(object[main]->GetColorB());
     }
+    else if (n == 1)
+    {
+        object[main]->ChangeColorG(object[other]->GetColorG());
+        object[other]->ChangeColorR(object[main]->GetColorR());
+        object[other]->ChangeColorB(object[main]->GetColorB());
+    }
+    else if (n == 2)
+    {
+        object[main]->ChangeColorB(object[other]->GetColorB());
+        object[other]->ChangeColorR(object[main]->GetColorR());
+        object[other]->ChangeColorG(object[main]->GetColorG());
+    }
+}
 
-    //    ui->label->setText( "R " + QString::number(object[0]->GetColorR()) + " G "
-    //            +QString::number(object[0]->GetColorG()) +" B "
-    //            +QString::number(object[0]->GetColorB()));
+void MainWindow::OneParents()
+{
+    int n = 0;
+    int minDeltaColor = 1000;
+    int mainObject = 26;
+    while(minDeltaColor > 2)
+    {
+        n++;
+        Sleep(50);
+        QApplication::processEvents();
 
-    //    ui->label_2->setText( "R " + QString::number(object[1]->GetColorR()) + " G "
-    //            +QString::number(object[1]->GetColorG()) +" B "
-    //            +QString::number(object[1]->GetColorB()));
+        minDeltaColor = 1000;
 
-    //    ui->label_3->setText( "R " + QString::number(object[2]->GetColorR()) + " G "
-    //            +QString::number(object[2]->GetColorG()) +" B "
-    //            +QString::number(object[2]->GetColorB()));
+        const int RWindow = ui->SliderRed->value();
+        const int GWindow = ui->SliderGreen->value();
+        const int BWindow = ui->SliderBlue->value();
 
-    //    ui->label_4->setText( "R " + QString::number(object[3]->GetColorR()) + " G "
-    //            +QString::number(object[3]->GetColorG()) +" B "
-    //            +QString::number(object[3]->GetColorB()));
+        for (int i = 0; i < allElements; i++)
+        {
+            object[i]->ResetColor();
 
-    //    ui->label_5->setText( "R " + QString::number(object[4]->GetColorR()) + " G "
-    //            +QString::number(object[4]->GetColorG()) +" B "
-    //            +QString::number(object[4]->GetColorB()));
+            object[i]->SetColorR(objWidget[i]->palette().window().color().red());
+            object[i]->SetColorG(objWidget[i]->palette().window().color().green());
+            object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
 
+            object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
+            object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
+            object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
 
+            if (object[i]->GetDeltaColor() < minDeltaColor)
+            {
+                minDeltaColor = object[i]->GetDeltaColor();
+                mainObject = i;
+            }
+        }
+
+        for (int c = 0; c < allElements; c++)
+        {
+            object[c]->operator=(*object[mainObject]);
+            Mutation(c);
+        }
+
+        for (int c = 0; c < allElements; c++)
+        {
+            Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
+            darkPalette2.setColor(QPalette::Window, Colour);
+            objWidget[c]->setPalette(darkPalette2);
+        }
+        ui->label->setText(QString::number(n));
+
+        //        ui->label->setText( "R " + QString::number(object[0]->GetColorR()) + " G "
+        //                +QString::number(object[0]->GetColorG()) +" B "
+        //                +QString::number(object[0]->GetColorB()));
+
+    }
+}
+
+void MainWindow::Mutation(int index)
+{
+    if(rand()%100 < 30)
+    {
+        int color = rand()%3;
+
+        if (color == 0)
+        {
+            object[index]->SetColorR(rand() %7 + (-3));
+        }
+        else if (color == 1)
+        {
+            object[index]->SetColorG(rand() %7 + (-3));
+        }
+        else
+            object[index]->SetColorB(rand() %7 + (-3));
+    }
 }
 
 void MainWindow::ColorWindow()

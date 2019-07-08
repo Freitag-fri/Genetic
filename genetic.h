@@ -19,6 +19,10 @@ public:
     void SetColorB(int value);
     void SetDeltaColor(int value);
 
+    void ChangeColorR(int value);
+    void ChangeColorG(int value);
+    void ChangeColorB(int value);
+
     void ResetColor();
 
     //    Genetic(const Genetic &other)

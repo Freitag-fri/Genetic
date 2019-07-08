@@ -56,14 +56,22 @@ private:
     Genetic colorLabel23;
     Genetic colorLabel24;
 
+    const static int allElements = 25;   //количество элементов
 
-    Genetic *object[25];
-    QWidget *objWidget[25];
+    Genetic *object[allElements];
+    Genetic *objectBest[allElements/2];
+    QWidget *objWidget[allElements];
 
     QPalette darkPalette2;
     QColor Colour;
 
+
+
     void ColorWindow();
+    void OneParents();
+    void Variant2();
+    void Mutation(int index);
+    void Children(int main, int other);
 };
 
 #endif // MAINWINDOW_H
