@@ -35,9 +35,30 @@ private:
     Genetic colorLabel2;
     Genetic colorLabel3;
     Genetic colorLabel4;
+    Genetic colorLabel5;
+    Genetic colorLabel6;
+    Genetic colorLabel7;
+    Genetic colorLabel8;
+    Genetic colorLabel9;
+    Genetic colorLabel10;
+    Genetic colorLabel11;
+    Genetic colorLabel12;
+    Genetic colorLabel13;
+    Genetic colorLabel14;
+    Genetic colorLabel15;
+    Genetic colorLabel16;
+    Genetic colorLabel17;
+    Genetic colorLabel18;
+    Genetic colorLabel19;
+    Genetic colorLabel20;
+    Genetic colorLabel21;
+    Genetic colorLabel22;
+    Genetic colorLabel23;
+    Genetic colorLabel24;
 
-    Genetic *object[5];
-    QWidget *objWidget[5];
+
+    Genetic *object[25];
+    QWidget *objWidget[25];
 
     QPalette darkPalette2;
     QColor Colour;

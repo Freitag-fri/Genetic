@@ -8,6 +8,14 @@ Genetic::Genetic()
     deltaColor = 0;
 }
 
+void Genetic::ResetColor()
+{
+    colorR = 0;
+    colorG = 0;
+    colorB = 0;
+    deltaColor = 0;
+}
+
 int Genetic::GetColorR()
 {
     return colorR;
@@ -30,12 +38,6 @@ int Genetic::GetDeltaColor()
 
 void Genetic::SetColorR(int value)
 {
-    if (value == 666)
-    {
-       colorR = 0;
-       return;
-    }
-
     colorR += value;
     if (colorR > 255)
         colorR = 255;
@@ -45,12 +47,6 @@ void Genetic::SetColorR(int value)
 
 void Genetic::SetColorG(int value)
 {
-    if (value == 666)
-    {
-       colorG = 0;
-       return;
-    }
-
     colorG += value;
     if (colorG > 255)
         colorG = 255;
@@ -60,12 +56,6 @@ void Genetic::SetColorG(int value)
 
 void Genetic::SetColorB(int value)
 {
-    if (value == 666)
-    {
-       colorB = 0;
-       return;
-    }
-
     colorB += value;
     if (colorB > 255)
         colorB = 255;
@@ -75,11 +65,6 @@ void Genetic::SetColorB(int value)
 
 void Genetic::SetDeltaColor(int value)
 {
-    if (value == 666)
-    {
-       deltaColor = 0;
-       return;
-    }
     deltaColor += value;
 }
 
