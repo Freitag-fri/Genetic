@@ -13,15 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     schedule = new QChart;              //задаем параметры графика
-           ui->widget->setChart(schedule);
-
-schedule->addSeries(series1);
-schedule->setAxisX(axisX,series1);
+    ui->widget->setChart(schedule);
+    schedule->addSeries(series1);
+    schedule->setAxisX(axisX,series1);
     schedule->setAxisY(axisY,series1);
     axisX->setRange(1, 10);
-
     axisY->setRange(1, 400);
-
 
     srand(time(0));             //сбрасывает рандомные числа
     object[0] = &colorLabel0;
