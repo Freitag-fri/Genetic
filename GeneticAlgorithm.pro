@@ -3,7 +3,7 @@
 # Project created by QtCreator 2019-07-06T00:43:20
 #
 #-------------------------------------------------
-
+QT  += core gui charts
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

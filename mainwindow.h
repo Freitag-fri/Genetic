@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 #include "genetic.h"
+#include <QtCharts>
+
+
+using namespace std;
+
+using namespace QtCharts;
 
 namespace Ui {
 class MainWindow;
@@ -28,7 +34,15 @@ private slots:
 
 
 private:
+
     Ui::MainWindow *ui;
+
+    QChart *schedule;
+
+    QValueAxis *axisX = new QValueAxis;
+    QValueAxis *axisY = new QValueAxis;
+    QLineSeries* series1 = new QLineSeries();
+
 
     Genetic colorLabel0;
     Genetic colorLabel1;
@@ -65,13 +79,13 @@ private:
     QPalette darkPalette2;
     QColor Colour;
 
-
-
     void ColorWindow();
     void OneParents();
     void Variant2();
     void Mutation(int index);
     void Children(int main, int other);
+
+    void Schedule(int pos, int n);
 };
 
 #endif // MAINWINDOW_H

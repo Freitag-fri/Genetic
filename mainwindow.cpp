@@ -4,11 +4,23 @@
 #include <time.h>
 #include <windows.h>
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    schedule = new QChart;              //задаем параметры графика
+           ui->widget->setChart(schedule);
+
+schedule->addSeries(series1);
+schedule->setAxisX(axisX,series1);
+    schedule->setAxisY(axisY,series1);
+    axisX->setRange(1, 10);
+
+    axisY->setRange(1, 400);
 
 
     srand(time(0));             //сбрасывает рандомные числа
@@ -64,7 +76,6 @@ MainWindow::MainWindow(QWidget *parent) :
     objWidget[23] = ui->label_24;
     objWidget[24] = ui->label_25;
 
-
     for (int i = 0; i < allElements; i++)            //закрашиваем окна случайным цветом
     {
         Colour.setRgb(rand()%256, rand()%256, rand()%256);
@@ -85,6 +96,12 @@ void MainWindow::on_pushButton_clicked()
     //OneParents();
 }
 
+void MainWindow::Schedule(int pos, int n)
+{
+    series1->append(n,pos);
+    axisX->setRange(1, n);
+}
+
 void MainWindow::Variant2()                     //турнирная селекция (из 2-х вариантов выбирается более приспособленный)
 {
     const int RWindow = ui->SliderRed->value();
@@ -92,6 +109,7 @@ void MainWindow::Variant2()                     //турнирная селек�
     const int BWindow = ui->SliderBlue->value();
     int n = 0;
     int minDeltaColor = 1000;
+    int minDeltaColor2 = 1000;
     while (minDeltaColor > 2)
     {
         n++;
@@ -100,6 +118,7 @@ void MainWindow::Variant2()                     //турнирная селек�
         for (int i = 0; i < allElements/2; i++)
         {
             minDeltaColor = 1000;
+            minDeltaColor2 = 1000;
             object[i*2]->ResetColor();
 
             object[i*2]->SetColorR(objWidget[i*2]->palette().window().color().red());
@@ -125,7 +144,6 @@ void MainWindow::Variant2()                     //турнирная селек�
             {
                 if(object[i*2+1]->GetDeltaColor()<minDeltaColor)
                     minDeltaColor = object[i*2+1]->GetDeltaColor();
-                //object[i*2]->operator=(*object[i*2+1]);
                 Children(i*2+1, i*2);
 
             }
@@ -133,7 +151,6 @@ void MainWindow::Variant2()                     //турнирная селек�
             {
                 if(object[i*2]->GetDeltaColor()<minDeltaColor)
                     minDeltaColor = object[i*2]->GetDeltaColor();
-                //object[i*2+1]->operator=(*object[i*2]);
                 Children(i*2, i*2+1);
             }
 
@@ -147,7 +164,11 @@ void MainWindow::Variant2()                     //турнирная селек�
             Colour.setRgb(object[i*2+1]->GetColorR(), object[i*2+1]->GetColorG(), object[i*2+1]->GetColorB());
             darkPalette2.setColor(QPalette::Window, Colour);
             objWidget[i*2+1]->setPalette(darkPalette2);
+
+            if(minDeltaColor < minDeltaColor2)
+                minDeltaColor2 = minDeltaColor;
         }
+
 
         for( int i = 0; i < allElements-1; i++)
         {
@@ -156,9 +177,6 @@ void MainWindow::Variant2()                     //турнирная селек�
             objWidget[i] = objWidget[pos];
             objWidget[pos] = a;
         }
-        //        ui->label->setText( "R " + QString::number(object[0]->GetColorR()) + " G "
-        //                                +QString::number(object[0]->GetColorG()) +" B "
-        //                                +QString::number(object[0]->GetColorB()));
         ui->label->setText(QString::number(n));
     }
 }
