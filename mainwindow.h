@@ -33,6 +33,8 @@ private slots:
 
 
 
+    void on_pushButton_2_clicked();
+
 private:
 
     Ui::MainWindow *ui;
@@ -89,6 +91,9 @@ private:
     void Children(int main, int other);
 
     void Schedule(int pos, int n, int deltaAverage);
+    void Schedule(int pos, int n);
+
+    void SetColor();
 };
 
 #endif // MAINWINDOW_H

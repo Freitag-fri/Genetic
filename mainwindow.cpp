@@ -4,6 +4,8 @@
 #include <time.h>
 #include <windows.h>
 
+int MaxDelta = 0;
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -23,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     schedule->setAxisX(axisX,series2);
     schedule->setAxisY(axisY,series2);
     axisX->setRange(1, 10);
-    axisY->setRange(1, 250);
+    axisY->setRange(1, 10);
+    axisY->setLabelFormat("%d");
+    axisX->setLabelFormat("%d");
 
     srand(time(0));             //сбрасывает рандомные числа
     object[0] = &colorLabel0;
@@ -78,12 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     objWidget[23] = ui->label_24;
     objWidget[24] = ui->label_25;
 
-    for (int i = 0; i < allElements; i++)            //закрашиваем окна случайным цветом
-    {
-        Colour.setRgb(rand()%256, rand()%256, rand()%256);
-        darkPalette2.setColor(QPalette::Window, Colour);
-        objWidget[i]->setPalette(darkPalette2);
-    }
+    SetColor();
 }
 
 MainWindow::~MainWindow()
@@ -93,6 +92,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
+    MaxDelta = 0;
     series1->clear();       //очищаем график
     series2->clear();
 
@@ -104,9 +104,21 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::Schedule(int pos, int n, int deltaAverage)
 {
+    if (deltaAverage > MaxDelta)
+        MaxDelta = deltaAverage;
     series1->append(n,pos);
     series2->append(n,deltaAverage);
     axisX->setRange(1, n);
+    axisY->setRange(1, MaxDelta + 5);
+}
+
+void MainWindow::Schedule(int pos, int n)
+{
+    if (pos > MaxDelta)
+        MaxDelta = pos;
+    series1->append(n,pos);
+    axisX->setRange(1, n);
+    axisY->setRange(1, MaxDelta + 5);
 }
 
 void MainWindow::BestPerents()
@@ -115,18 +127,27 @@ void MainWindow::BestPerents()
     const int RWindow = ui->SliderRed->value();
     const int GWindow = ui->SliderGreen->value();
     const int BWindow = ui->SliderBlue->value();
+    Genetic *temp;                                  //позырчатая сортировка
+    int element = 0;                                //рандомный родитель
+    int R = 0;                                      //переменные для закрашивания
+    int G = 0;
+    int B = 0;
+    int bestDeltaColor = 1000;                      //лучший цвет
+    int pass = 0;                                   //количество проходов
 
     for (int i = 0; i < allElements; i++)
     {
         object[i]->ResetColor();
-
         object[i]->SetColorR(objWidget[i]->palette().window().color().red());
         object[i]->SetColorG(objWidget[i]->palette().window().color().green());
         object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
     }
 
-    for (int z = 0; z < 1; z++)
+    while (bestDeltaColor > 2)
     {
+        pass++;
+        Sleep(50);
+        QApplication::processEvents();
         for (int i = 0; i < allElements; i++)
         {   object[i]->ChangeDeltaColor(0);
 
@@ -136,14 +157,12 @@ void MainWindow::BestPerents()
             object[i]->SetPosObj(i);
         }
 
-        Genetic *temp;
-        for(int i = 0; i < allElements-1; i++)
+        for(int i = 0; i < allElements-1; i++)          //пузырчатая сортировка
         {
             for(int c = 0; c < allElements-(1+i); c++)
             {
                 if (object[c]->GetDeltaColor() > object[c+1]->GetDeltaColor())
                 {
-
                     temp = object[c];
                     object[c] = object[c+1];
                     object[c+1] = temp;
@@ -151,10 +170,11 @@ void MainWindow::BestPerents()
             }
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)        //записываем лучшие 10 цветов в массив
         {
             tempObj[i] = *object[i];
         }
+        bestDeltaColor = tempObj[0].GetDeltaColor();;
 
         for (int i = 0; i < 2; i++)
         {
@@ -168,8 +188,6 @@ void MainWindow::BestPerents()
             Mutation(i);
         }
 
-
-        int element = 0;
         for (int i = 3; i < 25; i++)
         {
             element = rand()%10;
@@ -179,13 +197,14 @@ void MainWindow::BestPerents()
 
         for (int c = 0; c < allElements; c++)
         {
-            int R = object[c]->GetColorR();
-            int G = object[c]->GetColorG();
-            int B = object[c]->GetColorB();
+            R = object[c]->GetColorR();
+            G = object[c]->GetColorG();
+            B = object[c]->GetColorB();
             Colour.setRgb(R, G, B);
             darkPalette2.setColor(QPalette::Window, Colour);
             objWidget[c]->setPalette(darkPalette2);
         }
+        Schedule(bestDeltaColor,  pass);         //вывод данных на график
     }
 }
 
@@ -198,7 +217,7 @@ void MainWindow::Variant2()                     //турнирная селек�
     int minDeltaColor = 1000;
     int minDeltaColor2 = 1000;
     int minDeltaColor3 = 100;
-    while (minDeltaColor3 > 25)
+    while (minDeltaColor3 > 30)
     {
         minDeltaColor3 = 0;
         minDeltaColor2 = 1000;
@@ -345,11 +364,7 @@ void MainWindow::OneParents()
             objWidget[c]->setPalette(darkPalette2);
         }
         ui->label->setText(QString::number(n));
-
-        //        ui->label->setText( "R " + QString::number(object[0]->GetColorR()) + " G "
-        //                +QString::number(object[0]->GetColorG()) +" B "
-        //                +QString::number(object[0]->GetColorB()));
-
+        Schedule(minDeltaColor,  n);                        //вывод графика
     }
 }
 
@@ -400,4 +415,35 @@ void MainWindow::on_SliderBlue_sliderMoved(int position)
 {
     ui->labelBlue->setText("Blue "+QString::number(position));
     ColorWindow();
+}
+
+void MainWindow::SetColor()
+{
+    for (int i = 0; i < allElements; i++)            //закрашиваем окна случайным цветом
+    {
+        Colour.setRgb(rand()%256, rand()%256, rand()%256);
+        darkPalette2.setColor(QPalette::Window, Colour);
+        objWidget[i]->setPalette(darkPalette2);
+    }
+
+    ui->SliderRed->setValue(rand()%256);
+    ui->SliderGreen->setValue(rand()%256);
+    ui->SliderBlue->setValue(rand()%256);
+    ui->labelRed->setText("Red "+QString::number(ui->SliderRed->value()));
+    ui->labelGreen->setText("Green "+QString::number(ui->SliderGreen->value()));
+    ui->labelBlue->setText("Blue "+QString::number(ui->SliderBlue->value()));
+
+    Colour.setRgb(ui->SliderRed->value(), ui->SliderGreen->value(), ui->SliderBlue->value());
+    darkPalette2.setColor(QPalette::Window, Colour);
+    MainWindow::setPalette(darkPalette2);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    for (int i = 0; i < allElements; i++)            //закрашиваем окна случайным цветом
+    {
+        Colour.setRgb(rand()%256, rand()%256, rand()%256);
+        darkPalette2.setColor(QPalette::Window, Colour);
+        objWidget[i]->setPalette(darkPalette2);
+    }
 }

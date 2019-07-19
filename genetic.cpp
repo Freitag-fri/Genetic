@@ -2,11 +2,7 @@
 
 Genetic::Genetic()
 {
-    colorR = 0;
-    colorG = 0;
-    colorB = 0;
-    deltaColor = 0;
-    posObj = 0;
+    ResetColor();
 }
 
 void Genetic::ResetColor()
@@ -15,6 +11,7 @@ void Genetic::ResetColor()
     colorG = 0;
     colorB = 0;
     deltaColor = 0;
+    posObj = 0;
 }
 
 int Genetic::GetColorR()
