@@ -24,6 +24,7 @@ public:
     void ChangeColorR(int value);
     void ChangeColorG(int value);
     void ChangeColorB(int value);
+    void ChangeDeltaColor(int value);
 
     void ResetColor();
 

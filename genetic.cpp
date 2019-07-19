@@ -94,5 +94,9 @@ void Genetic::ChangeColorB(int value)
     colorB = value;
 }
 
+void Genetic::ChangeDeltaColor(int value)
+{
+    deltaColor = value;
+}
 
 

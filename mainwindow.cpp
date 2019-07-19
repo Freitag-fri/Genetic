@@ -111,20 +111,24 @@ void MainWindow::Schedule(int pos, int n, int deltaAverage)
 
 void MainWindow::BestPerents()
 {
-    Genetic tempObj[5];
+    Genetic tempObj[10];
     const int RWindow = ui->SliderRed->value();
     const int GWindow = ui->SliderGreen->value();
     const int BWindow = ui->SliderBlue->value();
 
-    for (int i = 0; i < 2;i++)
+    for (int i = 0; i < allElements; i++)
+    {
+        object[i]->ResetColor();
+
+        object[i]->SetColorR(objWidget[i]->palette().window().color().red());
+        object[i]->SetColorG(objWidget[i]->palette().window().color().green());
+        object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
+    }
+
+    for (int z = 0; z < 1; z++)
     {
         for (int i = 0; i < allElements; i++)
-        {
-            object[i]->ResetColor();
-
-            object[i]->SetColorR(objWidget[i]->palette().window().color().red());
-            object[i]->SetColorG(objWidget[i]->palette().window().color().green());
-            object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
+        {   object[i]->ChangeDeltaColor(0);
 
             object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
             object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
@@ -132,44 +136,47 @@ void MainWindow::BestPerents()
             object[i]->SetPosObj(i);
         }
 
+        Genetic *temp;
         for(int i = 0; i < allElements-1; i++)
         {
             for(int c = 0; c < allElements-(1+i); c++)
             {
                 if (object[c]->GetDeltaColor() > object[c+1]->GetDeltaColor())
                 {
-                    Genetic *temp;
-                    //object[c]->operator=(*object[c]);
-                    temp->operator=(*object[c]);
-                    object[c]->operator=(*object[c+1]);
-                    object[c+1]->operator=(*temp);
+
+                    temp = object[c];
+                    object[c] = object[c+1];
+                    object[c+1] = temp;
                 }
             }
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
-          tempObj[i] = *object[i];
+            tempObj[i] = *object[i];
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 2; i++)
         {
-            object[i]->operator=(tempObj[0]);
+            object[i] = &tempObj[0];        //проверить
             Mutation(i);
+        }
 
-    //        Colour.setRgb(object[i]->GetColorR(), object[i]->GetColorG(), object[i]->GetColorB());
-    //        darkPalette2.setColor(QPalette::Window, Colour);
-    //        objWidget[1]->setPalette(darkPalette2);
+        for (int i = 2; i < 3; i++)
+        {
+            object[i] = &tempObj[1];        //проверить
+            Mutation(i);
         }
 
 
         int element = 0;
-        for (int i = 5; i < 25; i++)
+        for (int i = 3; i < 25; i++)
         {
-            element = rand()%5;
-            object[i]->operator=(tempObj[element]);
+            element = rand()%10;
+            object[i] = &tempObj[element];
             Mutation(i);
         }
+
         for (int c = 0; c < allElements; c++)
         {
             int R = object[c]->GetColorR();
@@ -180,8 +187,6 @@ void MainWindow::BestPerents()
             objWidget[c]->setPalette(darkPalette2);
         }
     }
-
-
 }
 
 void MainWindow::Variant2()                     //турнирная селекция (из 2-х вариантов выбирается более приспособленный)
@@ -350,20 +355,20 @@ void MainWindow::OneParents()
 
 void MainWindow::Mutation(int index)
 {
-    if(rand()%100 < 90)
+    if(rand()%100 < 20)
     {
         int color = rand()%3;
 
         if (color == 0)
         {
-            object[index]->SetColorR(rand() %7 + (-3));
+            object[index]->SetColorR(rand() %11 + (-5));
         }
         else if (color == 1)
         {
-            object[index]->SetColorG(rand() %7 + (-3));
+            object[index]->SetColorG(rand() %11 + (-5));
         }
         else
-            object[index]->SetColorB(rand() %7 + (-3));
+            object[index]->SetColorB(rand() %11 + (-5));
     }
 }
 
