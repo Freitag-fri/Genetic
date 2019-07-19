@@ -6,6 +6,7 @@ Genetic::Genetic()
     colorG = 0;
     colorB = 0;
     deltaColor = 0;
+    posObj = 0;
 }
 
 void Genetic::ResetColor()
@@ -34,6 +35,11 @@ int Genetic::GetColorB()
 int Genetic::GetDeltaColor()
 {
     return deltaColor;
+}
+
+int Genetic::GetPosObj()
+{
+    return posObj;
 }
 
 void Genetic::SetColorR(int value)
@@ -68,6 +74,11 @@ void Genetic::SetDeltaColor(int value)
     deltaColor += value;
 }
 
+void Genetic::SetPosObj(int value)
+{
+    posObj = value;
+}
+
 void Genetic::ChangeColorR(int value)
 {
     colorR = value;
@@ -82,4 +93,6 @@ void Genetic::ChangeColorB(int value)
 {
     colorB = value;
 }
+
+
 

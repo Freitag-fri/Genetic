@@ -42,6 +42,7 @@ private:
     QValueAxis *axisX = new QValueAxis;
     QValueAxis *axisY = new QValueAxis;
     QLineSeries* series1 = new QLineSeries();
+    QLineSeries* series2 = new QLineSeries();
 
 
     Genetic colorLabel0;
@@ -82,10 +83,12 @@ private:
     void ColorWindow();
     void OneParents();
     void Variant2();
+    void BestPerents();
+
     void Mutation(int index);
     void Children(int main, int other);
 
-    void Schedule(int pos, int n);
+    void Schedule(int pos, int n, int deltaAverage);
 };
 
 #endif // MAINWINDOW_H

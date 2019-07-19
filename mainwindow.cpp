@@ -15,10 +15,15 @@ MainWindow::MainWindow(QWidget *parent) :
     schedule = new QChart;              //задаем параметры графика
     ui->widget->setChart(schedule);
     schedule->addSeries(series1);
+    series1->setName("Min");
+    series2->setName("Average");
+    schedule->addSeries(series2);
     schedule->setAxisX(axisX,series1);
     schedule->setAxisY(axisY,series1);
+    schedule->setAxisX(axisX,series2);
+    schedule->setAxisY(axisY,series2);
     axisX->setRange(1, 10);
-    axisY->setRange(1, 400);
+    axisY->setRange(1, 250);
 
     srand(time(0));             //сбрасывает рандомные числа
     object[0] = &colorLabel0;
@@ -88,15 +93,95 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    Variant2();
+    series1->clear();       //очищаем график
+    series2->clear();
+
+    //Variant2();
+    BestPerents();
 
     //OneParents();
 }
 
-void MainWindow::Schedule(int pos, int n)
+void MainWindow::Schedule(int pos, int n, int deltaAverage)
 {
     series1->append(n,pos);
+    series2->append(n,deltaAverage);
     axisX->setRange(1, n);
+}
+
+void MainWindow::BestPerents()
+{
+    Genetic tempObj[5];
+    const int RWindow = ui->SliderRed->value();
+    const int GWindow = ui->SliderGreen->value();
+    const int BWindow = ui->SliderBlue->value();
+
+    for (int i = 0; i < 2;i++)
+    {
+        for (int i = 0; i < allElements; i++)
+        {
+            object[i]->ResetColor();
+
+            object[i]->SetColorR(objWidget[i]->palette().window().color().red());
+            object[i]->SetColorG(objWidget[i]->palette().window().color().green());
+            object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
+
+            object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
+            object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
+            object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
+            object[i]->SetPosObj(i);
+        }
+
+        for(int i = 0; i < allElements-1; i++)
+        {
+            for(int c = 0; c < allElements-(1+i); c++)
+            {
+                if (object[c]->GetDeltaColor() > object[c+1]->GetDeltaColor())
+                {
+                    Genetic *temp;
+                    //object[c]->operator=(*object[c]);
+                    temp->operator=(*object[c]);
+                    object[c]->operator=(*object[c+1]);
+                    object[c+1]->operator=(*temp);
+                }
+            }
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+          tempObj[i] = *object[i];
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+            object[i]->operator=(tempObj[0]);
+            Mutation(i);
+
+    //        Colour.setRgb(object[i]->GetColorR(), object[i]->GetColorG(), object[i]->GetColorB());
+    //        darkPalette2.setColor(QPalette::Window, Colour);
+    //        objWidget[1]->setPalette(darkPalette2);
+        }
+
+
+        int element = 0;
+        for (int i = 5; i < 25; i++)
+        {
+            element = rand()%5;
+            object[i]->operator=(tempObj[element]);
+            Mutation(i);
+        }
+        for (int c = 0; c < allElements; c++)
+        {
+            int R = object[c]->GetColorR();
+            int G = object[c]->GetColorG();
+            int B = object[c]->GetColorB();
+            Colour.setRgb(R, G, B);
+            darkPalette2.setColor(QPalette::Window, Colour);
+            objWidget[c]->setPalette(darkPalette2);
+        }
+    }
+
+
 }
 
 void MainWindow::Variant2()                     //турнирная селекция (из 2-х вариантов выбирается более приспособленный)
@@ -107,15 +192,18 @@ void MainWindow::Variant2()                     //турнирная селек�
     int n = 0;
     int minDeltaColor = 1000;
     int minDeltaColor2 = 1000;
-    while (minDeltaColor > 2)
+    int minDeltaColor3 = 100;
+    while (minDeltaColor3 > 25)
     {
+        minDeltaColor3 = 0;
+        minDeltaColor2 = 1000;
         n++;
         Sleep(50);
         QApplication::processEvents();
         for (int i = 0; i < allElements/2; i++)
         {
             minDeltaColor = 1000;
-            minDeltaColor2 = 1000;
+
             object[i*2]->ResetColor();
 
             object[i*2]->SetColorR(objWidget[i*2]->palette().window().color().red());
@@ -162,11 +250,13 @@ void MainWindow::Variant2()                     //турнирная селек�
             darkPalette2.setColor(QPalette::Window, Colour);
             objWidget[i*2+1]->setPalette(darkPalette2);
 
+
             if(minDeltaColor < minDeltaColor2)
                 minDeltaColor2 = minDeltaColor;
+            minDeltaColor3 += minDeltaColor;
         }
 
-
+        Schedule(minDeltaColor2,  n, (minDeltaColor3*2)/allElements);
         for( int i = 0; i < allElements-1; i++)
         {
             QWidget *a = objWidget[i];
@@ -260,7 +350,7 @@ void MainWindow::OneParents()
 
 void MainWindow::Mutation(int index)
 {
-    if(rand()%100 < 30)
+    if(rand()%100 < 90)
     {
         int color = rand()%3;
 
