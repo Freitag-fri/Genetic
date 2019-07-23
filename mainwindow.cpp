@@ -4,7 +4,7 @@
 #include <time.h>
 #include <windows.h>
 
-int MaxDelta = 0;
+extern int MaxDelta = 0;
 
 using namespace std;
 
@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->comboBox->addItem("One parents");     //0
+    ui->comboBox->addItem("Bubble sort");    //1
+    ui->comboBox->addItem("Best parents");      //2
 
     schedule = new QChart;              //задаем параметры графика
     ui->widget->setChart(schedule);
@@ -96,10 +100,13 @@ void MainWindow::on_pushButton_clicked()
     series1->clear();       //очищаем график
     series2->clear();
 
-    //Variant2();
-    BestPerents();
+    if (ui->comboBox->currentIndex() == 0)
+        OneParents();
+    else if (ui->comboBox->currentIndex() == 1)
+        Variant2();
+    else if ((ui->comboBox->currentIndex() == 2))
+        BestPerents();
 
-    //OneParents();
 }
 
 void MainWindow::Schedule(int pos, int n, int deltaAverage)
@@ -154,7 +161,6 @@ void MainWindow::BestPerents()
             object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
             object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
             object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
-            object[i]->SetPosObj(i);
         }
 
         for(int i = 0; i < allElements-1; i++)          //пузырчатая сортировка
@@ -178,29 +184,26 @@ void MainWindow::BestPerents()
 
         for (int i = 0; i < 2; i++)
         {
-            object[i] = &tempObj[0];        //проверить
+            *object[i] = tempObj[0];
             Mutation(i);
         }
 
         for (int i = 2; i < 3; i++)
         {
-            object[i] = &tempObj[1];        //проверить
+            *object[i] = tempObj[1];
             Mutation(i);
         }
 
         for (int i = 3; i < 25; i++)
         {
             element = rand()%10;
-            object[i] = &tempObj[element];
+            *object[i] = tempObj[element];
             Mutation(i);
         }
 
         for (int c = 0; c < allElements; c++)
         {
-            R = object[c]->GetColorR();
-            G = object[c]->GetColorG();
-            B = object[c]->GetColorB();
-            Colour.setRgb(R, G, B);
+            Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
             darkPalette2.setColor(QPalette::Window, Colour);
             objWidget[c]->setPalette(darkPalette2);
         }
@@ -217,7 +220,7 @@ void MainWindow::Variant2()                     //турнирная селек�
     int minDeltaColor = 1000;
     int minDeltaColor2 = 1000;
     int minDeltaColor3 = 100;
-    while (minDeltaColor3 > 30)
+    while (minDeltaColor3 > 50)
     {
         minDeltaColor3 = 0;
         minDeltaColor2 = 1000;
@@ -288,7 +291,6 @@ void MainWindow::Variant2()                     //турнирная селек�
             objWidget[i] = objWidget[pos];
             objWidget[pos] = a;
         }
-        ui->label->setText(QString::number(n));
     }
 }
 
@@ -317,9 +319,24 @@ void MainWindow::Children(int main, int other)
 
 void MainWindow::OneParents()
 {
+
     int n = 0;
     int minDeltaColor = 1000;
     int mainObject = 26;
+
+    const int RWindow = ui->SliderRed->value();
+    const int GWindow = ui->SliderGreen->value();
+    const int BWindow = ui->SliderBlue->value();
+
+    for (int i = 0; i < allElements; i++)
+    {
+        object[i]->ResetColor();
+
+        object[i]->SetColorR(objWidget[i]->palette().window().color().red());
+        object[i]->SetColorG(objWidget[i]->palette().window().color().green());
+        object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
+    }
+
     while(minDeltaColor > 2)
     {
         n++;
@@ -328,18 +345,9 @@ void MainWindow::OneParents()
 
         minDeltaColor = 1000;
 
-        const int RWindow = ui->SliderRed->value();
-        const int GWindow = ui->SliderGreen->value();
-        const int BWindow = ui->SliderBlue->value();
-
         for (int i = 0; i < allElements; i++)
         {
-            object[i]->ResetColor();
-
-            object[i]->SetColorR(objWidget[i]->palette().window().color().red());
-            object[i]->SetColorG(objWidget[i]->palette().window().color().green());
-            object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
-
+            object[i]->ChangeDeltaColor(0);
             object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
             object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
             object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
@@ -363,7 +371,6 @@ void MainWindow::OneParents()
             darkPalette2.setColor(QPalette::Window, Colour);
             objWidget[c]->setPalette(darkPalette2);
         }
-        ui->label->setText(QString::number(n));
         Schedule(minDeltaColor,  n);                        //вывод графика
     }
 }

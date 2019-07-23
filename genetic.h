@@ -13,13 +13,11 @@ public:
     int GetColorG();
     int GetColorB();
     int GetDeltaColor();
-    int GetPosObj();
 
     void SetColorR(int value);
     void SetColorG(int value);
     void SetColorB(int value);
     void SetDeltaColor(int value);
-    void SetPosObj(int value);
 
     void ChangeColorR(int value);
     void ChangeColorG(int value);
@@ -36,7 +34,6 @@ public:
         colorG = obj.colorG;
         colorB = obj.colorB;
         deltaColor = obj.deltaColor;
-        posObj = obj.posObj;
         return *this;
     }
 
@@ -48,6 +45,7 @@ private:
     int deltaColor;
 
 };
+
 
 
 #endif // GEMETIC_H

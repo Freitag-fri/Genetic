@@ -1,5 +1,6 @@
 #include "genetic.h"
 
+
 Genetic::Genetic()
 {
     ResetColor();
@@ -11,7 +12,6 @@ void Genetic::ResetColor()
     colorG = 0;
     colorB = 0;
     deltaColor = 0;
-    posObj = 0;
 }
 
 int Genetic::GetColorR()
@@ -32,11 +32,6 @@ int Genetic::GetColorB()
 int Genetic::GetDeltaColor()
 {
     return deltaColor;
-}
-
-int Genetic::GetPosObj()
-{
-    return posObj;
 }
 
 void Genetic::SetColorR(int value)
@@ -69,11 +64,6 @@ void Genetic::SetColorB(int value)
 void Genetic::SetDeltaColor(int value)
 {
     deltaColor += value;
-}
-
-void Genetic::SetPosObj(int value)
-{
-    posObj = value;
 }
 
 void Genetic::ChangeColorR(int value)
