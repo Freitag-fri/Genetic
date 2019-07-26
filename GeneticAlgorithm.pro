@@ -27,7 +27,8 @@ CONFIG += c++11
 SOURCES += \
         genetic.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        oneparents.cpp
 
 HEADERS += \
         genetic.h \

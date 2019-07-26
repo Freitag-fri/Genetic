@@ -95,6 +95,8 @@ private:
     void Schedule(int pos, int n);
 
     void SetColor();
+    void SetSchedule();
+    void SetObject();
 };
 
 #endif // MAINWINDOW_H

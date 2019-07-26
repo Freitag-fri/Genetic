@@ -4,7 +4,7 @@
 #include <time.h>
 #include <windows.h>
 
-extern int MaxDelta = 0;
+int MaxDelta = 0;
 
 using namespace std;
 
@@ -13,79 +13,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    srand(time(0));                     //сбрасывает рандомные числа
 
     ui->comboBox->addItem("One parents");     //0
     ui->comboBox->addItem("Bubble sort");    //1
     ui->comboBox->addItem("Best parents");      //2
 
-    schedule = new QChart;              //задаем параметры графика
-    ui->widget->setChart(schedule);
-    schedule->addSeries(series1);
-    series1->setName("Min");
-    series2->setName("Average");
-    schedule->addSeries(series2);
-    schedule->setAxisX(axisX,series1);
-    schedule->setAxisY(axisY,series1);
-    schedule->setAxisX(axisX,series2);
-    schedule->setAxisY(axisY,series2);
-    axisX->setRange(1, 10);
-    axisY->setRange(1, 10);
-    axisY->setLabelFormat("%d");
-    axisX->setLabelFormat("%d");
-
-    srand(time(0));             //сбрасывает рандомные числа
-    object[0] = &colorLabel0;
-    object[1] = &colorLabel1;
-    object[2] = &colorLabel2;
-    object[3] = &colorLabel3;
-    object[4] = &colorLabel4;
-    object[5] = &colorLabel5;
-    object[6] = &colorLabel6;
-    object[7] = &colorLabel7;
-    object[8] = &colorLabel8;
-    object[9] = &colorLabel9;
-    object[10] = &colorLabel10;
-    object[11] = &colorLabel11;
-    object[12] = &colorLabel12;
-    object[13] = &colorLabel13;
-    object[14] = &colorLabel14;
-    object[15] = &colorLabel15;
-    object[16] = &colorLabel16;
-    object[17] = &colorLabel17;
-    object[18] = &colorLabel18;
-    object[19] = &colorLabel19;
-    object[20] = &colorLabel20;
-    object[21] = &colorLabel21;
-    object[22] = &colorLabel22;
-    object[23] = &colorLabel23;
-    object[24] = &colorLabel24;
-
-    objWidget[0] = ui->label;
-    objWidget[1] = ui->label_2;
-    objWidget[2] = ui->label_3;
-    objWidget[3] = ui->label_4;
-    objWidget[4] = ui->label_5;
-    objWidget[5] = ui->label_6;
-    objWidget[6] = ui->label_7;
-    objWidget[7] = ui->label_8;
-    objWidget[8] = ui->label_9;
-    objWidget[9] = ui->label_10;
-    objWidget[10] = ui->label_11;
-    objWidget[11] = ui->label_12;
-    objWidget[12] = ui->label_13;
-    objWidget[13] = ui->label_14;
-    objWidget[14] = ui->label_15;
-    objWidget[15] = ui->label_16;
-    objWidget[16] = ui->label_17;
-    objWidget[17] = ui->label_18;
-    objWidget[18] = ui->label_19;
-    objWidget[19] = ui->label_20;
-    objWidget[20] = ui->label_21;
-    objWidget[21] = ui->label_22;
-    objWidget[22] = ui->label_23;
-    objWidget[23] = ui->label_24;
-    objWidget[24] = ui->label_25;
-
+    SetSchedule();
+    SetObject();
     SetColor();
 }
 
@@ -106,7 +41,6 @@ void MainWindow::on_pushButton_clicked()
         Variant2();
     else if ((ui->comboBox->currentIndex() == 2))
         BestPerents();
-
 }
 
 void MainWindow::Schedule(int pos, int n, int deltaAverage)
@@ -136,9 +70,6 @@ void MainWindow::BestPerents()
     const int BWindow = ui->SliderBlue->value();
     Genetic *temp;                                  //позырчатая сортировка
     int element = 0;                                //рандомный родитель
-    int R = 0;                                      //переменные для закрашивания
-    int G = 0;
-    int B = 0;
     int bestDeltaColor = 1000;                      //лучший цвет
     int pass = 0;                                   //количество проходов
 
@@ -257,7 +188,6 @@ void MainWindow::Variant2()                     //турнирная селек�
                 if(object[i*2+1]->GetDeltaColor()<minDeltaColor)
                     minDeltaColor = object[i*2+1]->GetDeltaColor();
                 Children(i*2+1, i*2);
-
             }
             else
             {
@@ -317,63 +247,7 @@ void MainWindow::Children(int main, int other)
     }
 }
 
-void MainWindow::OneParents()
-{
 
-    int n = 0;
-    int minDeltaColor = 1000;
-    int mainObject = 26;
-
-    const int RWindow = ui->SliderRed->value();
-    const int GWindow = ui->SliderGreen->value();
-    const int BWindow = ui->SliderBlue->value();
-
-    for (int i = 0; i < allElements; i++)
-    {
-        object[i]->ResetColor();
-
-        object[i]->SetColorR(objWidget[i]->palette().window().color().red());
-        object[i]->SetColorG(objWidget[i]->palette().window().color().green());
-        object[i]->SetColorB(objWidget[i]->palette().window().color().blue());
-    }
-
-    while(minDeltaColor > 2)
-    {
-        n++;
-        Sleep(50);
-        QApplication::processEvents();
-
-        minDeltaColor = 1000;
-
-        for (int i = 0; i < allElements; i++)
-        {
-            object[i]->ChangeDeltaColor(0);
-            object[i]->SetDeltaColor(abs(RWindow - object[i]->GetColorR()));
-            object[i]->SetDeltaColor(abs(GWindow - object[i]->GetColorG()));
-            object[i]->SetDeltaColor(abs(BWindow - object[i]->GetColorB()));
-
-            if (object[i]->GetDeltaColor() < minDeltaColor)
-            {
-                minDeltaColor = object[i]->GetDeltaColor();
-                mainObject = i;
-            }
-        }
-
-        for (int c = 0; c < allElements; c++)
-        {
-            object[c]->operator=(*object[mainObject]);
-            Mutation(c);
-        }
-
-        for (int c = 0; c < allElements; c++)
-        {
-            Colour.setRgb(object[c]->GetColorR(), object[c]->GetColorG(), object[c]->GetColorB());
-            darkPalette2.setColor(QPalette::Window, Colour);
-            objWidget[c]->setPalette(darkPalette2);
-        }
-        Schedule(minDeltaColor,  n);                        //вывод графика
-    }
-}
 
 void MainWindow::Mutation(int index)
 {
@@ -443,6 +317,80 @@ void MainWindow::SetColor()
     Colour.setRgb(ui->SliderRed->value(), ui->SliderGreen->value(), ui->SliderBlue->value());
     darkPalette2.setColor(QPalette::Window, Colour);
     MainWindow::setPalette(darkPalette2);
+}
+
+void MainWindow::SetSchedule()
+{
+    schedule = new QChart;              //задаем параметры графика
+    ui->widget->setChart(schedule);
+    schedule->addSeries(series1);
+    series1->setName("Min");
+    series2->setName("Average");
+    schedule->addSeries(series2);
+    schedule->setAxisX(axisX,series1);
+    schedule->setAxisY(axisY,series1);
+    schedule->setAxisX(axisX,series2);
+    schedule->setAxisY(axisY,series2);
+    axisX->setRange(1, 10);
+    axisY->setRange(1, 10);
+    axisY->setLabelFormat("%d");
+    axisX->setLabelFormat("%d");
+}
+
+void MainWindow::SetObject()
+{
+    object[0] = &colorLabel0;
+    object[1] = &colorLabel1;
+    object[2] = &colorLabel2;
+    object[3] = &colorLabel3;
+    object[4] = &colorLabel4;
+    object[5] = &colorLabel5;
+    object[6] = &colorLabel6;
+    object[7] = &colorLabel7;
+    object[8] = &colorLabel8;
+    object[9] = &colorLabel9;
+    object[10] = &colorLabel10;
+    object[11] = &colorLabel11;
+    object[12] = &colorLabel12;
+    object[13] = &colorLabel13;
+    object[14] = &colorLabel14;
+    object[15] = &colorLabel15;
+    object[16] = &colorLabel16;
+    object[17] = &colorLabel17;
+    object[18] = &colorLabel18;
+    object[19] = &colorLabel19;
+    object[20] = &colorLabel20;
+    object[21] = &colorLabel21;
+    object[22] = &colorLabel22;
+    object[23] = &colorLabel23;
+    object[24] = &colorLabel24;
+
+    objWidget[0] = ui->label;
+    objWidget[1] = ui->label_2;
+    objWidget[2] = ui->label_3;
+    objWidget[3] = ui->label_4;
+    objWidget[4] = ui->label_5;
+    objWidget[5] = ui->label_6;
+    objWidget[6] = ui->label_7;
+    objWidget[7] = ui->label_8;
+    objWidget[8] = ui->label_9;
+    objWidget[9] = ui->label_10;
+    objWidget[10] = ui->label_11;
+    objWidget[11] = ui->label_12;
+    objWidget[12] = ui->label_13;
+    objWidget[13] = ui->label_14;
+    objWidget[14] = ui->label_15;
+    objWidget[15] = ui->label_16;
+    objWidget[16] = ui->label_17;
+    objWidget[17] = ui->label_18;
+    objWidget[18] = ui->label_19;
+    objWidget[19] = ui->label_20;
+    objWidget[20] = ui->label_21;
+    objWidget[21] = ui->label_22;
+    objWidget[22] = ui->label_23;
+    objWidget[23] = ui->label_24;
+    objWidget[24] = ui->label_25;
+
 }
 
 void MainWindow::on_pushButton_2_clicked()
