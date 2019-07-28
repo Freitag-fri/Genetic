@@ -319,6 +319,11 @@ void MainWindow::SetColor()
     MainWindow::setPalette(darkPalette2);
 }
 
+void setParam()
+{
+
+}
+
 void MainWindow::SetSchedule()
 {
     schedule = new QChart;              //задаем параметры графика
